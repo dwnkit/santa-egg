@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞礼物</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'KaiTi', '楷体', cursive;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 雪景背景 */
+        .snow-ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(to top, #ffffff 0%, rgba(255,255,255,0.8) 100%);
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* 房子 */
+        .house {
+            position: absolute;
+            bottom: 150px;
+            width: 120px;
+            height: 100px;
+            background: #8B4513;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .house::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            left: -20px;
+            width: 0;
+            height: 0;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 80px solid #DC143C;
+        }
+
+        .house::after {
+            content: '🚪';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+        }
+
+        .house1 { left: 10%; }
+        .house2 { left: 30%; background: #654321; }
+        .house3 { right: 25%; background: #A0522D; }
+        .house4 { right: 5%; }
+
+        /* 圣诞老人雪橇 */
+        .sleigh {
+            position: absolute;
+            bottom: 300px;
+            right: -150px;
+            font-size: 60px;
+            animation: fly 8s linear;
+            z-index: 100;
+        }
+
+        @keyframes fly {
+            0% {
+                right: -150px;
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-30px);
+            }
+            70% {
+                transform: translateY(20px);
+            }
+            100% {
+                right: 100vw;
+                transform: translateY(-50px);
+            }
+        }
+
+        /* 礼物盒 */
+        .gift-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            cursor: pointer;
+            animation: shake 2s ease-in-out infinite;
+            z-index: 200;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) rotate(5deg); }
+        }
+
+        /* 打开按钮 */
+        .open-btn {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #DC143C, #B91C3C);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'KaiTi', '楷体', cursive;
+            box-shadow: 0 8px 16px rgba(220, 20, 60, 0.3);
+            transition: all 0.3s ease;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 7s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .open-btn:hover {
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 12px 24px rgba(220, 20, 60, 0.4);
+        }
+
+        /* 礼物展示 */
+        .gift-result {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            z-index: 300;
+        }
+
+        .gift-item {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        .gift-text {
+            font-size: 36px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .continue-btn {
+            background: linear-gradient(145deg, #228B22, #006400);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'KaiTi', '楷体', cursive;
+            box-shadow: 0 8px 16px rgba(34, 139, 34, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(34, 139, 34, 0.4);
+        }
+
+        /* 雪花效果 */
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            animation: snowfall 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 小丑特殊页面 */
+        .clown-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c1810 0%, #1a0f0a 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .clown-content {
+            text-align: center;
+            color: white;
+        }
+
+        .clown-face {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: spring 2s ease-in-out infinite;
+        }
+
+        @keyframes spring {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-30px) rotate(-10deg); }
+            75% { transform: translateY(-30px) rotate(10deg); }
+        }
+
+        .clown-text {
+            font-size: 32px;
+            margin-bottom: 40px;
+            color: #DC143C;
+        }
+
+        .choice-buttons {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .angel-btn, .devil-btn {
+            padding: 20px 40px;
+            font-size: 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'KaiTi', '楷体', cursive;
+            transition: all 0.3s ease;
+        }
+
+        .angel-btn {
+            background: linear-gradient(145deg, #87CEEB, #4169E1);
+            color: white;
+            box-shadow: 0 8px 16px rgba(135, 206, 235, 0.3);
+        }
+
+        .devil-btn {
+            background: linear-gradient(145deg, #DC143C, #8B0000);
+            color: white;
+            box-shadow: 0 8px 16px rgba(220, 20, 60, 0.3);
+        }
+
+        .angel-btn:hover, .devil-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* 圣诞老人请求页面 */
+        .santa-request {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+
+        .santa-content {
+            text-align: center;
+            color: white;
+        }
+
+        .santa-emoji {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: plead 1s ease-in-out infinite;
+        }
+
+        @keyframes plead {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .santa-text {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        .final-choice {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .okay-btn, .no-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'KaiTi', '楷体', cursive;
+        }
+
+        .okay-btn {
+            background: #FFD700;
+            color: #8B0000;
+        }
+
+        .no-btn {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <!-- 雪景 -->
+        <div class="snow-ground"></div>
+        
+        <!-- 房子 -->
+        <div class="house house1"></div>
+        <div class="house house2"></div>
+        <div class="house house3"></div>
+        <div class="house house4"></div>
+        
+        <!-- 圣诞老人雪橇 -->
+        <div class="sleigh">🎅🦌🛷</div>
+        
+        <!-- 礼物盒 -->
+        <div class="gift-box" id="giftBox">🎁</div>
+        
+        <!-- 打开按钮 -->
+        <button class="open-btn" onclick="openGift()">打开礼物</button>
+        
+        <!-- 礼物结果 -->
+        <div class="gift-result" id="giftResult">
+            <div class="gift-item" id="giftItem"></div>
+            <div class="gift-text" id="giftText"></div>
+            <button class="continue-btn" onclick="continueToCard()">继续</button>
+        </div>
+    </div>
+
+    <!-- 小丑页面 -->
+    <div class="clown-page" id="clownPage">
+        <div class="clown-content">
+            <div class="clown-face">🃏</div>
+            <div class="clown-text">啊哦...看来什么都没抽到</div>
+            <div class="choice-buttons">
+                <button class="angel-btn" onclick="restartGame()">再来一次吧</button>
+                <button class="devil-btn" onclick="leaveWithRegret()">遗憾离场</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圣诞老人请求页面 -->
+    <div class="santa-request" id="santaRequest">
+        <div class="santa-content">
+            <div class="santa-emoji">🎅</div>
+            <div class="santa-text">求求你了！再来一次吧~</div>
+            <div class="final-choice">
+                <button class="okay-btn" onclick="restartGame()">好吧</button>
+                <button class="no-btn" onclick="endGame()">我就不</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+                // 礼物类型
+        const gifts = [
+            { emoji: '🍾', text: '甜酒一瓶！', type: 'wine' },
+            { emoji: '🧣', text: '围巾^o^温暖过冬', type: 'scarf' },
+            { emoji: '🍬', text: '美味滴雪花酥', type: 'candy' },
+            { emoji: '🃏', text: '哦不...！', type: 'clown' }
+        ];
+
+        let selectedGift = null;
+
+        // 创建雪花效果
+        function createSnowflakes() {
+            for (let i = 0; i < 40; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDelay = Math.random() * 10 + 's';
+                snowflake.style.animationDuration = (Math.random() * 5 + 8) + 's';
+                snowflake.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                document.querySelector('.scene').appendChild(snowflake);
+            }
+        }
+
+        // 打开礼物
+        function openGift() {
+            const giftBox = document.getElementById('giftBox');
+            const openBtn = document.querySelector('.open-btn');
+            const giftResult = document.getElementById('giftResult');
+            const giftItem = document.getElementById('giftItem');
+            const giftText = document.getElementById('giftText');
+            const continueBtn = document.querySelector('.continue-btn'); // 获取继续按钮
+
+            // 隐藏初始盒子和按钮
+            giftBox.style.display = 'none';
+            openBtn.style.display = 'none';
+
+            // 随机选择礼物
+            selectedGift = gifts[Math.floor(Math.random() * gifts.length)];
+
+            // 如果是小丑
+            if (selectedGift.type === 'clown') {
+                // 显示小丑结果，但隐藏“继续”按钮
+                giftItem.textContent = selectedGift.emoji;
+                giftText.textContent = selectedGift.text;
+                continueBtn.style.display = 'none'; 
+                giftResult.style.display = 'block';
+
+                // 2秒后自动切换到带按钮的小丑专用选择页面
+                setTimeout(() => {
+                    giftResult.style.display = 'none';
+                    document.getElementById('clownPage').style.display = 'flex';
+                }, 2000);
+            } else {
+                // 如果是正常礼物，正常显示并保留“继续”按钮
+                giftItem.textContent = selectedGift.emoji;
+                giftText.textContent = selectedGift.text;
+                continueBtn.style.display = 'inline-block';
+                giftResult.style.display = 'block';
+            }
+        }
+
+        // 继续到贺卡页面
+        function continueToCard() {
+            localStorage.setItem('giftType', selectedGift.type);
+            window.location.href = 'card.html';
+        }
+
+        // 重新开始游戏 (跳转回推箱子开头)
+        function restartGame() {
+            window.location.href = 'index.html';
+        }
+
+        // 遗憾离场（进入圣诞老人求情环节）
+        function leaveWithRegret() {
+            document.getElementById('clownPage').style.display = 'none';
+            document.getElementById('santaRequest').style.display = 'flex';
+        }
+
+        // 彻底终结：黑屏效果
+        function endGame() {
+            // 创建一个纯黑遮罩覆盖全屏
+            const blackScreen = document.createElement('div');
+            blackScreen.style.cssText = `
+                position: fixed;
+                top: 0; left: 0;
+                width: 100vw; height: 100vh;
+                background: black;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #333;
+                font-family: serif;
+            `;
+            blackScreen.innerHTML = '<h1>THE END</h1>';
+            document.body.appendChild(blackScreen);
+            
+            // 3秒后尝试关闭（浏览器限制下可能无法关闭，但黑屏效果已达成）
+            setTimeout(() => {
+                console.log("游戏已结束");
+            }, 3000);
+        }
+
+        window.onload = function() {
+            createSnowflakes();
+        };
+    </script>
+</body>
+</html>

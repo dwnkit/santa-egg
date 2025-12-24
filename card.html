@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞贺卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'KaiTi', '楷体', cursive;
+            background: linear-gradient(135deg, #0f3b0f 0%, #1e5e1e 50%, #2d7a2d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .card-container {
+            width: 90vw;
+            max-width: 800px;
+            height: 90vh;
+            max-height: 600px;
+            position: relative;
+            animation: cardFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+
+        /* 背景光斑 */
+        .light-spots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .light-spot {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
+        }
+
+        .light-spot:nth-child(1) { top: 10%; left: 15%; animation-delay: 0s; }
+        .light-spot:nth-child(2) { top: 20%; right: 20%; animation-delay: 1s; }
+        .light-spot:nth-child(3) { bottom: 30%; left: 10%; animation-delay: 2s; }
+        .light-spot:nth-child(4) { bottom: 15%; right: 15%; animation-delay: 3s; }
+        .light-spot:nth-child(5) { top: 40%; left: 50%; animation-delay: 0.5s; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* 雪球 */
+        .snow-balls {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .snow-ball {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 70%, transparent 100%);
+            border-radius: 50%;
+            animation: snowBallFloat 8s ease-in-out infinite;
+        }
+
+        .snow-ball:nth-child(1) { top: 5%; left: 5%; animation-delay: 0s; }
+        .snow-ball:nth-child(2) { top: 10%; right: 10%; animation-delay: 2s; }
+        .snow-ball:nth-child(3) { bottom: 20%; left: 8%; animation-delay: 4s; }
+        .snow-ball:nth-child(4) { bottom: 10%; right: 5%; animation-delay: 6s; }
+
+        @keyframes snowBallFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+        }
+
+        /* 毛茸茸的毯子 */
+        .blanket {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFF8DC 0%, #F5F5DC 50%, #E6E6FA 100%);
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                inset 0 0 100px rgba(255,255,255,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 毛茸茸质感 */
+        .blanket::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px, 40px 40px;
+            pointer-events: none;
+        }
+
+        /* 红白相间斜条纹边框 */
+        .blanket-border {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            background: repeating-linear-gradient(
+                45deg,
+                #DC143C 0px,
+                #DC143C 8px,
+                white 8px,
+                white 16px
+            );
+            border-radius: 35px;
+            z-index: -1;
+        }
+
+        /* 绿色藤蔓 */
+        .vines {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border-radius: 35px;
+            overflow: hidden;
+            z-index: -2;
+        }
+
+        .vine {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #228B22;
+            border-radius: 50%;
+        }
+
+        .vine:nth-child(1) { top: 0; left: 0; }
+        .vine:nth-child(2) { top: 0; right: 0; }
+        .vine:nth-child(3) { bottom: 0; left: 0; }
+        .vine:nth-child(4) { bottom: 0; right: 0; }
+
+        /* 小铃铛 */
+        .bells {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .bell {
+            position: absolute;
+            font-size: 20px;
+            animation: jingle 3s ease-in-out infinite;
+        }
+
+        .bell:nth-child(1) { top: -10px; left: 20px; animation-delay: 0s; }
+        .bell:nth-child(2) { top: -10px; right: 20px; animation-delay: 0.5s; }
+        .bell:nth-child(3) { bottom: -10px; left: 20px; animation-delay: 1s; }
+        .bell:nth-child(4) { bottom: -10px; right: 20px; animation-delay: 1.5s; }
+
+        @keyframes jingle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        /* 圣诞老人 */
+        .santa {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            z-index: 10;
+            animation: santaPeek 4s ease-in-out infinite;
+        }
+
+        @keyframes santaPeek {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* 圣诞袜 */
+        .stocking {
+            position: absolute;
+            top: 60px;
+            left: 40px;
+            font-size: 40px;
+            animation: stockingSwing 3s ease-in-out infinite;
+        }
+
+        @keyframes stockingSwing {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        /* 圣诞树 */
+        .tree {
+            position: absolute;
+            top: 60px;
+            right: 40px;
+            font-size: 40px;
+            animation: treeSparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes treeSparkle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 贺卡内容 */
+        .card-content {
+            position: absolute;
+            top: 80px;
+            left: 50px;
+            right: 50px;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        /* Merry Christmas 标题 */
+        .merry-christmas {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 48px;
+            color: #DC143C;
+            text-shadow: 
+                2px 2px 0px white,
+                -1px -1px 0px white,
+                1px -1px 0px white,
+                -1px 1px 0px white,
+                1px 1px 0px white;
+            margin-bottom: 20px;
+        }
+
+        /* 祝福语区域 */
+        .blessing {
+            flex: 1;
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 虚线边框 */
+        .blessing::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px dashed #DC143C;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        /* 礼物涂鸦 */
+        .gift-doodle {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.15;
+            z-index: 1;
+        }
+
+        .gift-doodle.wine { top: 20px; right: 20px; }
+        .gift-doodle.scarf { top: 50%; left: 20px; transform: translateY(-50%); }
+        .gift-doodle.candy { bottom: 20px; right: 30px; }
+
+        /* 落款 */
+        .signature {
+            text-align: right;
+            font-size: 20px;
+            color: #DC143C;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, #DC143C, #B91C3C);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'KaiTi', '楷体', cursive;
+            box-shadow: 0 4px 8px rgba(220, 20, 60, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(220, 20, 60, 0.4);
+        }
+
+        /* 雪花效果 */
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            animation: snowfall 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <!-- 光斑 -->
+        <div class="light-spots">
+            <div class="light-spot"></div>
+            <div class="light-spot"></div>
+            <div class="light-spot"></div>
+            <div class="light-spot"></div>
+            <div class="light-spot"></div>
+        </div>
+
+        <!-- 雪球 -->
+        <div class="snow-balls">
+            <div class="snow-ball"></div>
+            <div class="snow-ball"></div>
+            <div class="snow-ball"></div>
+            <div class="snow-ball"></div>
+        </div>
+
+        <!-- 毛茸茸的毯子 -->
+        <div class="blanket">
+            <div class="blanket-border"></div>
+            <div class="vines">
+                <div class="vine"></div>
+                <div class="vine"></div>
+                <div class="vine"></div>
+                <div class="vine"></div>
+            </div>
+
+            <!-- 小铃铛 -->
+            <div class="bells">
+                <div class="bell">🔔</div>
+                <div class="bell">🔔</div>
+                <div class="bell">🔔</div>
+                <div class="bell">🔔</div>
+            </div>
+
+            <!-- 圣诞老人 -->
+            <div class="santa">🎅</div>
+
+            <!-- 圣诞袜 -->
+            <div class="stocking">🧦</div>
+
+            <!-- 圣诞树 -->
+            <div class="tree">🎄</div>
+
+            <!-- 贺卡内容 -->
+            <div class="card-content">
+                <div class="merry-christmas">Merry Christmas</div>
+                
+                <div class="blessing" id="blessing">
+                    <!-- 祝福语将通过JavaScript填充 -->
+                </div>
+
+                <div class="signature">From：蛋！</div>
+            </div>
+
+            <!-- 礼物涂鸦 -->
+            <div class="gift-doodle wine" id="wineDoodle">🍾</div>
+            <div class="gift-doodle scarf" id="scarfDoodle">🧣</div>
+            <div class="gift-doodle candy" id="candyDoodle">🍬</div>
+        </div>
+
+        <!-- 返回按钮 -->
+        <button class="back-btn" onclick="goBack()">返回首页</button>
+    </div>
+
+    <script>
+        // 祝福语模板
+        const blessings = {
+            chelsea: `To chelsea：
+圣诞快乐、新年快乐呀~~
+
+我们家族最萌滴幺女，认识你这两个月（或者大半年？？）特别开心！这两个月里我们一块去看演出、听现场、拍照片、散步聊天......做了很多有意思的事情，我很喜欢跟你耍！虽然我们对彼此了解得还不算太多，但我想说在我看来你是一个有点小敏感、爱思考、爱表达而且能表达出自己的女孩，这是我觉得很珍贵也很厉害的能力，我在向你学习。圣诞过要到就是2026喽~希望新的一年我们能继续开心滴耍，然后祝你健康、开心、解决掉那些让你焦虑的事情 奔向你的大学生活 : )`,
+
+            kay: `To kay：
+圣诞快乐、新年快乐呀~~
+
+小恺伊！时间过得好快，一转眼我们都已经认识两个月了。这两个月你带我体验了很多之前没有过的经历，认识了很多和我不一样的人，我觉得很新奇有趣！我喜欢我在被身边朋友们不断改变的这件事，所以能在大学在最后一年认识你我觉得特别恰好又幸运。
+虽然不知道2025对你来说算是怎样，但20026一定会是更好的一年~~我一直这样相信&为我们助力中！
+祝你2026，以及接下来的每一年健康（大口吃饭，好好睡觉！）、平安、幸福、希望所有坏情绪和坏人都远离你、所有事情都顺顺利利滴过过过！`,
+
+            熊小安: `To 熊小安：
+圣诞快乐、新年快乐呀~~
+
+网络一线牵，我真的没想到有一天我可以跟网友耍得这么好@.@！像我之前对你说过的那样，你特别纯净、天真善良，像哈利波特里面的卢娜一样空灵又跳脱。这是我觉得最最难得最最珍贵最最希望永远不要变的东西...我喜欢和你一起出去逛街吃饭散步聊天！！马上就到2026了！！！！祝你新的一年能遇到190身材好的舔狗男，情感生活快乐幸福呀~然后最最重要的是要健康、平安幸福、天天开心！我们都要毕业了，祝我们开启新的特别好的人生！！
+认识你我觉得特别好，我很想你明天见^^`
+        };
+
+        // 获取用户信息和礼物
+        const userName = localStorage.getItem('userName') || '朋友';
+        const giftType = localStorage.getItem('giftType');
+
+        // 显示对应的祝福
+        function showBlessing() {
+            const blessingElement = document.getElementById('blessing');
+            const nameKey = userName.toLowerCase();
+            
+            let blessingText = '';
+            if (blessings[nameKey]) {
+                blessingText = blessings[nameKey];
+            } else {
+                blessingText = `To ${userName}：
+圣诞快乐、新年快乐呀~~
+
+感谢你的参与！虽然我们可能不太熟悉，但在这个特别的日子里，我依然要送上最真挚的祝福。愿你在新的一年里身体健康、工作顺利、家庭幸福、万事如意！希望这个小小的圣诞游戏能给你带来一丝温暖和快乐。`;
+            }
+            
+            blessingElement.textContent = blessingText;
+        }
+
+        // 显示对应的礼物涂鸦
+        function showGiftDoodle() {
+            // 隐藏所有涂鸦
+            document.getElementById('wineDoodle').style.display = 'none';
+            document.getElementById('scarfDoodle').style.display = 'none';
+            document.getElementById('candyDoodle').style.display = 'none';
+
+            // 根据礼物类型显示对应的涂鸦
+            if (giftType === 'wine') {
+                document.getElementById('wineDoodle').style.display = 'block';
+            } else if (giftType === 'scarf') {
+                document.getElementById('scarfDoodle').style.display = 'block';
+            } else if (giftType === 'candy') {
+                document.getElementById('candyDoodle').style.display = 'block';
+            }
+        }
+
+        // 返回首页
+        function goBack() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // 创建雪花效果
+        function createSnowflakes() {
+            for (let i = 0; i < 50; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDelay = Math.random() * 12 + 's';
+                snowflake.style.animationDuration = (Math.random() * 6 + 10) + 's';
+                snowflake.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // 页面加载时执行
+        window.onload = function() {
+            showBlessing();
+            showGiftDoodle();
+            createSnowflakes();
+        };
+    </script>
+</body>
+</html>

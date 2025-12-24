@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圣诞推箱子游戏</title>
+    <style>
+        /* 保留原有的页面样式 */
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+
+        body {
+            font-family: 'KaiTi', '楷体', cursive;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 95vw;
+            max-width: 600px;
+            padding: 20px 10px;
+            background: #8B4513;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            text-align: center;
+        }
+
+        .title {
+            color: #DC143C;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 核心游戏盘容器 */
+        #grid { 
+            display: grid; 
+            gap: 2px; 
+            padding: 10px; 
+            background: #F5DEB3; 
+            border: 8px solid #654321;
+            border-radius: 12px; 
+            margin: 0 auto;
+            width: fit-content;
+        }
+
+        /* 单元格样式适配新逻辑 */
+        .cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; }
+        .wall { background: #8B4513; border: 2px solid #654321; }
+        .target { background: rgba(47, 79, 79, 0.4); border-radius: 50%; border: 2px dashed #2F4F4F; }
+        .player::after { content: '🐣'; position: absolute; z-index: 5; }
+        .box { background: #228B22; border: 2px solid #006400; border-radius: 6px; position: relative; }
+        .box::after { content: '🎁'; font-size: 20px; }
+        .box.on-target { background: #55efc4; } 
+
+        /* 控制按钮 */
+        .controls { 
+            margin-top: 20px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 60px); 
+            gap: 10px; 
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+        .btn { 
+            width: 60px; height: 60px; background: white; border: none; 
+            border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; color: #DC143C; 
+            box-shadow: 0 4px 0 #b91c3c; cursor: pointer; font-size: 20px;
+        }
+        .btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .reset-link {
+            margin-top: 15px;
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: underline;
+            cursor: pointer;
+            font-family: inherit;
+            opacity: 0.8;
+        }
+
+        /* 装饰物 */
+        .decoration { position: absolute; font-size: 30px; z-index: 5; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+        .snowflake { position: absolute; color: white; animation: snowfall 10s linear infinite; z-index: 1; pointer-events: none; }
+        @keyframes snowfall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+    <audio id="bgm" loop preload="auto">
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="musicControl" onclick="toggleMusic()" style="position: fixed; top: 20px; right: 20px; z-index: 2000; cursor: pointer; font-size: 24px; width: 40px; height: 40px; background: rgba(0,0,0,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+        <span id="musicEmoji">🎵</span>
+    </div>
+    <div class="game-container">
+        <h1 class="title">不过不是中国人</h1>
+        
+        <div id="grid"></div>
+
+        <div class="controls">
+            <div></div><button class="btn" onclick="move(0,-1)">↑</button><div></div>
+            <button class="btn" onclick="move(-1,0)">←</button>
+            <button class="btn" onclick="move(0,1)">↓</button>
+            <button class="btn" onclick="move(1,0)">→</button>
+        </div>
+        
+        <button class="reset-link" onclick="initMap()">重置本关</button>
+        
+        <div class="decoration" style="top: 10px; left: 10px;">🎄</div>
+        <div class="decoration" style="top: 10px; right: 10px;">🎅</div>
+    </div>
+
+    <script>
+        let curMap, px, py;
+        
+        // 引用你提供的三个关卡地图数据
+        const maps = [
+            [[1,1,1,1,1,1,1,1,1],[1,4,0,0,1,0,0,4,1],[1,0,3,0,0,0,3,0,1],[1,0,0,0,2,0,0,0,1],[1,0,3,0,0,0,3,0,1],[1,4,0,0,1,0,0,4,1],[1,1,1,1,1,1,1,1,1]],
+            [[1,1,1,1,1,1,1],[1,0,1,4,4,1,1],[1,0,0,3,3,0,1],[1,0,0,2,0,0,1],[1,1,1,1,1,1,1]],
+            [[1,1,1,1,1,1],[1,2,0,0,0,1],[1,0,3,1,0,1],[1,0,3,0,0,1],[1,0,3,0,0,1],[1,0,4,4,4,1],[1,1,1,1,1,1]]
+        ];
+
+        // 初始化随机关卡
+        function initMap() {
+            const raw = maps[Math.floor(Math.random() * maps.length)];
+            curMap = JSON.parse(JSON.stringify(raw));
+            draw();
+        }
+
+        // 渲染地图
+        function draw() {
+            const grid = document.getElementById('grid');
+            grid.style.gridTemplateColumns = `repeat(${curMap[0].length}, 40px)`;
+            grid.innerHTML = '';
+            
+            // 找到原始地图用于判断目标点位置（4为目标点）
+            const originalMap = maps.find(m => m.length === curMap.length && m[0].length === curMap[0].length);
+            
+            for(let y=0; y<curMap.length; y++) {
+                for(let x=0; x<curMap[y].length; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    // 1: 墙, 2: 玩家, 3: 箱子, 4: 目标点, 0: 空地
+                    if(curMap[y][x] === 1) cell.classList.add('wall');
+                    if(originalMap[y][x] === 4) cell.classList.add('target');
+                    
+                    if(curMap[y][x] === 2) { 
+                        px = x; py = y; 
+                        cell.classList.add('player'); 
+                    }
+                    if(curMap[y][x] === 3) {
+                        cell.classList.add('box');
+                        if(originalMap[y][x] === 4) cell.classList.add('on-target');
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+            checkWin(originalMap);
+        }
+
+        // 移动逻辑
+        function move(dx, dy) {
+            let nx = px + dx, ny = py + dy;
+            // 撞墙判断
+            if(!curMap[ny] || curMap[ny][nx] === 1) return;
+            
+            // 推箱子判断
+            if(curMap[ny][nx] === 3) {
+                let nbx = nx + dx, nby = ny + dy;
+                if(!curMap[nby] || curMap[nby][nbx] === 1 || curMap[nby][nbx] === 3) return;
+                curMap[nby][nbx] = 3;
+                curMap[ny][nx] = 0;
+            }
+            
+            // 移动玩家
+            curMap[py][px] = 0;
+            px = nx; py = ny;
+            curMap[py][px] = 2;
+            draw();
+        }
+
+        // 胜利检测并跳转
+        function checkWin(originalMap) {
+            let win = true;
+            for(let y=0; y<originalMap.length; y++) {
+                for(let x=0; x<originalMap[y].length; x++) {
+                    // 如果原始位置是目标点(4)，但当前地图该位置不是箱子(3)，则未赢
+                    if(originalMap[y][x] === 4 && curMap[y][x] !== 3) win = false;
+                }
+            }
+            if(win) {
+                setTimeout(() => {
+                    // 保持原有的跳转逻辑
+                    window.location.href = 'name.html';
+                }, 600);
+            }
+        }
+
+        // 增加雪花背景
+        function createSnowflakes() {
+            for (let i = 0; i < 20; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                snowflake.style.animationDelay = Math.random() * 10 + 's';
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // 键盘支持
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowUp') move(0,-1);
+            if(e.key === 'ArrowDown') move(0,1);
+            if(e.key === 'ArrowLeft') move(-1,0);
+            if(e.key === 'ArrowRight') move(1,0);
+        });
+
+        window.onload = () => {
+            initMap();
+            createSnowflakes();
+        };
+const bgm = document.getElementById('bgm');
+    const musicControl = document.getElementById('musicControl');
+    const musicEmoji = document.getElementById('musicEmoji');
+
+    function tryPlayMusic() {
+        bgm.play().then(() => {
+            musicControl.classList.add('music-playing');
+            musicEmoji.innerText = '🎵';
+        }).catch(() => { console.log("等待交互"); });
+    }
+
+    function toggleMusic() {
+        if (bgm.paused) {
+            bgm.play();
+            musicControl.classList.add('music-playing');
+            musicEmoji.innerText = '🎵';
+        } else {
+            bgm.pause();
+            musicControl.classList.remove('music-playing');
+            musicEmoji.innerText = '🔇';
+        }
+    }
+    document.addEventListener('click', tryPlayMusic, { once: true });
+    document.addEventListener('touchstart', tryPlayMusic, { once: true });
+    </script>
+</body>
+</html>
